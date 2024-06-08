@@ -9,11 +9,12 @@ const subcategoryRoutes = require("./Routers/subcategoryRoute");
 const tagRoutes = require("./Routers/tagRoute");
 const blogRoutes = require("./Routers/blogRoute");
 const uploadMedia = require("./Routers/uploadMedia");
+const contributorRoutes = require('./Routers/contributorRoutes');
 
 require("dotenv").config();
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Increase payload size limit
 app.use(
   cors({
     origin: process.env.FRONTEND_DOMAIN,
@@ -33,6 +34,7 @@ app.use('/api/subcategories', subcategoryRoutes);
 app.use('/api/tags', tagRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/uploadmedia', uploadMedia);
+app.use('/api/contributors', contributorRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

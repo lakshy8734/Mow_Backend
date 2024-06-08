@@ -31,7 +31,7 @@ const getCurrentFormattedDateTime = () => {
   const minutes = String(currentDate.getMinutes()).padStart(2, "0");
   const formattedDate = `${day}-${month}-${year}`;
   const formattedTime = `${hours}-${minutes}`;
-  return `${formattedDate}_${formattedTime}`;
+  return `${formattedDate}`;
 };
 
 router.post("/", upload.single("file"), async (req, res) => {
@@ -61,7 +61,7 @@ router.post("/", upload.single("file"), async (req, res) => {
       .jpeg({ quality: 80 }) // Compress the image with 80% quality
       .toBuffer();
 
-    const storageRef = ref(storage, `${currentFolderName}/${uniqueFilename}`);
+    const storageRef = ref(storage, `Blogs/${currentFolderName}/${uniqueFilename}`);
     await uploadBytes(storageRef, compressedImageBuffer);
 
     const downloadURL = await getDownloadURL(storageRef);

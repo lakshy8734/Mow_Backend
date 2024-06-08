@@ -89,7 +89,6 @@ router.post("/:blogId/comments", async (req, res) => {
   }
 });
 
-
 router.get("/:blogId/comments", async (req, res) => {
   try {
     const blog = await Blog.findOne({ blogId: req.params.blogId });
@@ -102,7 +101,6 @@ router.get("/:blogId/comments", async (req, res) => {
     res.status(500).json({ message: "Error fetching comments", error });
   }
 });
-
 
 router.delete("/:blogId/comments/:commentId", async (req, res) => {
   try {
@@ -133,6 +131,106 @@ router.get("/:subcategoryId", async (req, res) => {
     res.json(blogs);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch blogs" });
+  }
+});
+
+router.put(
+  "/editblog/:blogId",
+  [
+    // Validate title
+    body("title").trim().isLength({ min: 1 }).withMessage("Title is required"),
+
+    // Validate authorName
+    body("authorName")
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage("Author name is required"),
+
+    // Validate categoryId
+    body("categoryId")
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage("Category is required"),
+
+    // Validate subcategoryId
+    body("subcategoryId")
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage("Subcategory is required"),
+
+    // Validate tagIds
+    body("tagIds")
+      .isArray({ min: 1 })
+      .withMessage("At least one tag is required"),
+
+    // Validate mediaUrl
+    body("mediaUrl")
+      .notEmpty()
+      .withMessage("Media URL is required")
+      .isURL({ protocols: ["http", "https"] })
+      .withMessage("Invalid media URL format"),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        // If there are validation errors, return them to the frontend
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const { blogId } = req.params;
+      const {
+        title,
+        content,
+        mediaUrl,
+        categoryId,
+        subcategoryId,
+        tagIds,
+        authorName,
+        slug,
+      } = req.body;
+
+      // Find the blog by its ID in the database
+      const blog = await Blog.findOne({ blogId });
+
+      if (!blog) {
+        // If the blog is not found, return a 404 response to the frontend
+        return res.status(404).json({ message: "Blog not found" });
+      }
+
+      // Update the blog
+      blog.title = title;
+      blog.content = content;
+      blog.mediaUrl = mediaUrl;
+      blog.categoryId = categoryId;
+      blog.subcategoryId = subcategoryId;
+      blog.tagIds = tagIds;
+      blog.authorName = authorName;
+      blog.slug = slug;
+      blog.updatedAt = new Date();
+
+      await blog.save();
+
+      res.json({ message: "Blog updated successfully", blog });
+    } catch (error) {
+      // If an error occurs during the update process, return a 500 response
+      console.error("Error updating blog:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+);
+
+// DELETE route to delete a blog by blogId
+router.delete("/editblog/:blogId", async (req, res) => {
+  try {
+    const blogId = req.params.blogId;
+    const deletedBlog = await Blog.findOneAndDelete({ blogId }); // Adjust the delete logic to use blogId
+    if (!deletedBlog) {
+      return res.status(404).send({ message: "Blog not found" });
+    }
+    res.status(200).send({ message: "Blog deleted successfully" });
+  } catch (error) {
+    res.status(500).send({ message: "Failed to delete blog" });
   }
 });
 
