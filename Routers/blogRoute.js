@@ -234,6 +234,17 @@ router.delete("/editblog/:blogId", async (req, res) => {
   }
 });
 
+// Route to get blogs by subcategoryId
+router.get('/subcategory/:subcategoryId', async (req, res) => {
+  const { subcategoryId } = req.params;
+  try {
+    const relatedBlogs = await Blog.find({ subcategoryId });
+    res.json(relatedBlogs);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching related blogs' });
+  }
+});
+
 // POST route to create a new blog
 router.post(
   "/",
