@@ -12,6 +12,12 @@ const linkValidationRules = [
   check('userId').not().isEmpty().withMessage('User ID is required')
 ];
 
+const putlinkValidationRules = [
+    check('name').not().isEmpty().withMessage('Name is required'),
+    check('link').isURL().withMessage('Valid URL is required'),
+    check('isActive').isBoolean().withMessage('isActive must be a boolean'),
+  ];
+
 // GET all links
 router.get('/', async (req, res) => {
   try {
@@ -22,6 +28,18 @@ router.get('/', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch links' });
   }
 });
+
+// GET all active links
+router.get('/isActive', async (req, res) => {
+  try {
+    const activeLinks = await Link.find({ isActive: true });
+    res.json(activeLinks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch links' });
+  }
+});
+
 
 // POST add a new link
 router.post('/addlink', linkValidationRules, async (req, res) => {
@@ -46,19 +64,19 @@ router.post('/addlink', linkValidationRules, async (req, res) => {
 });
 
 // PUT edit a link
-router.put('/editlink/:linkId', linkValidationRules, async (req, res) => {
+router.put('/editlink/:linkId', putlinkValidationRules, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   const { linkId } = req.params;
-  const { name, link, userId } = req.body;
+  const { name, link, isActive } = req.body;
 
   try {
     const updatedLink = await Link.findOneAndUpdate(
       { linkId },
-      { name, link, userId },
+      { name, link, isActive },
       { new: true }
     );
 

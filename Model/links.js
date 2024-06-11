@@ -6,6 +6,7 @@ const linkSchema = new mongoose.Schema({
   date: { type: String, required: true },
   userId: { type: String, required: true },
   linkId: { type: String, required: true, unique: true },
+  isActive: { type: Boolean, default: false }, // New field
 });
 
 module.exports = mongoose.model('Link', linkSchema);
