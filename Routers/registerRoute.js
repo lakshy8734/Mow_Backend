@@ -73,7 +73,10 @@ const uploadImageToFirebase = async (file) => {
     .jpeg({ quality: 80 }) // Compress the image with 80% quality
     .toBuffer();
 
-  const storageRef = ref(storage, `user/${currentFolderName}/${uniqueFilename}`);
+  const storageRef = ref(
+    storage,
+    `user/${currentFolderName}/${uniqueFilename}`
+  );
   await uploadBytes(storageRef, compressedImageBuffer);
   const downloadURL = await getDownloadURL(storageRef);
 
@@ -81,17 +84,17 @@ const uploadImageToFirebase = async (file) => {
 };
 
 // DELETE route to delete a tag by ID
-Router.delete('/user/:userId', async (req, res) => {
+Router.delete("/user/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
     const user = await register.findOneAndDelete(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
-    
-    res.json({ message: 'User deleted successfully' });
+
+    res.json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
@@ -101,8 +104,14 @@ Router.put(
   upload.single("profilePicture"),
   body("name").optional().isLength({ min: 1 }).withMessage("Name is required"),
   body("email").optional().isEmail().withMessage("Email is not valid"),
-  body("username").optional().isLength({ min: 1 }).withMessage("Username is required"),
-  body("role").optional().isIn(["User", "Admin", "Subadmin"]).withMessage("Invalid role"),
+  body("username")
+    .optional()
+    .isLength({ min: 1 })
+    .withMessage("Username is required"),
+  body("role")
+    .optional()
+    .isIn(["User", "Admin", "Subadmin"])
+    .withMessage("Invalid role"),
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -164,7 +173,6 @@ Router.put(
     }
   }
 );
-
 
 // Register route with validation
 Router.post(
@@ -300,7 +308,7 @@ Router.post(
 
       // Generate a token
       const token = jwt.sign({ id: User._id }, process.env.JWT_SECRET, {
-        expiresIn: 86400, // expires in 24 hours
+        expiresIn: "1h",
       });
 
       console.log(User.userId);
@@ -358,7 +366,7 @@ Router.post("/login/google", async (req, res) => {
 
       // Generate a token for the new user
       const token = jwt.sign({ id: User._id }, process.env.JWT_SECRET, {
-        expiresIn: 86400, // expires in 24 hours
+        expiresIn: "1h", // expires in 24 hours
       });
 
       console.log(User.userId);
@@ -391,7 +399,7 @@ Router.post("/login/google", async (req, res) => {
 
       // Generate a token for the existing user
       const token = jwt.sign({ id: User._id }, process.env.JWT_SECRET, {
-        expiresIn: 86400, // expires in 24 hours
+        expiresIn: "1h", // expires in 24 hours
       });
 
       console.log(User.userId);
@@ -431,8 +439,19 @@ function generateRandomPassword() {
   return password;
 }
 
+// GET route to fetch all users with role "SubAdmin"
+Router.get("/subadmin", async (req, res) => {
+  try {
+    // Query the database to find users with the role "SubAdmin"
+    const subAdminUsers = await register.find({ role: "SubAdmin" });
+    res.json(subAdminUsers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // GET route to fetch all tags
-Router.get('/', async (req, res) => {
+Router.get("/", async (req, res) => {
   try {
     const users = await register.find();
     res.json(users);

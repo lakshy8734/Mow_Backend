@@ -245,6 +245,19 @@ router.get('/subcategory/:subcategoryId', async (req, res) => {
   }
 });
 
+// Route to fetch blogs based on userId
+router.get('/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const blogs = await Blog.find({ userId });
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch blogs' });
+  }
+});
+
+
 // POST route to create a new blog
 router.post(
   "/",
@@ -254,6 +267,7 @@ router.post(
     body("mediaUrl").notEmpty().withMessage("Media URL is required"),
     body("categoryId").notEmpty().withMessage("Category is required"),
     body("subcategoryId").notEmpty().withMessage("Subcategory is required"),
+    body("userId").notEmpty().withMessage("User ID is required"),
     body("tagIds").isArray().withMessage("Tags must be an array"),
     body("tagIds").custom((value) => {
       if (!value || value.length === 0) {
@@ -293,6 +307,7 @@ router.post(
         tagIds,
         authorName,
         slug,
+        userId,
       } = req.body;
 
       // Ensure non-null values for categoryId and subcategoryId
@@ -314,6 +329,7 @@ router.post(
         tagIds,
         authorName,
         slug,
+        userId,
         createdAt,
       });
       await newBlog.save();

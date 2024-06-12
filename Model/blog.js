@@ -31,6 +31,7 @@ const blogSchema = new Schema({
   slug: { type: String, required: true },
   likes: { type: Number, default: 0 },
   views: { type: Number, default: 0 },
+  userId: { type: String, required: true},
   createdAt: { type: String, required: true },
   comments: { type: [commentSchema], default: [] }, // Embedding comments within blog
 });
