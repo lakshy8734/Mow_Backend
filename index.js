@@ -11,6 +11,7 @@ const blogRoutes = require("./Routers/blogRoute");
 const uploadMedia = require("./Routers/uploadMedia");
 const contributorRoutes = require('./Routers/contributorRoutes');
 const linkRoute = require('./Routers/linkRoute');
+const contactRoute = require('./Routers/contactRoute');
 
 require("dotenv").config();
 const app = express();
@@ -37,6 +38,7 @@ app.use('/api/blog', blogRoutes);
 app.use('/uploadmedia', uploadMedia);
 app.use('/api/contributors', contributorRoutes);
 app.use('/api/links', linkRoute);
+app.use('/api/contact', contactRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
