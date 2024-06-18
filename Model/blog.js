@@ -8,6 +8,9 @@ const replySchema = new Schema({
   createdAt: { type: String, required: true },
   parentCommentId: { type: String, default: null },
   replies: { type: [this], default: [] }, // Self-referencing for nested replies
+  userId: { type: String },
+  userName: { type: String},
+  userProfilePicture: { type: String },
 });
 
 const commentSchema = new Schema({
@@ -17,6 +20,9 @@ const commentSchema = new Schema({
   createdAt: { type: String, required: true },
   parentCommentId: { type: String, default: null },
   replies: { type: [replySchema], default: [] }, // Embedding replies within comments
+  userId: { type: String},
+  userName: { type: String},
+  userProfilePicture: { type: String },
 });
 
 const blogSchema = new Schema({

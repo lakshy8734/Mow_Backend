@@ -54,7 +54,7 @@ const findParentAndAddReply = (comments, parentCommentId, newReply) => {
 };
 
 router.post("/:blogId/comments", async (req, res) => {
-  const { content, author, parentCommentId } = req.body;
+  const { content, author, parentCommentId, userId, userName, userProfilePicture  } = req.body;
 
   try {
     const blog = await Blog.findOne({ blogId: req.params.blogId });
@@ -71,6 +71,9 @@ router.post("/:blogId/comments", async (req, res) => {
       createdAt,
       parentCommentId,
       replies: [],
+      userId,
+      userName,
+      userProfilePicture,
     };
 
     if (parentCommentId) {

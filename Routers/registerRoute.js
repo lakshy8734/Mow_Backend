@@ -210,7 +210,7 @@ Router.post(
     }
 
     try {
-      const { name, email, username, password, role } = req.body;
+      const { name, email, username, password, role, bio } = req.body;
       const hashpassword = await bcrypt.hash(password, 10);
 
       let profilePictureUrl = "";
@@ -218,7 +218,7 @@ Router.post(
         profilePictureUrl = await uploadImageToFirebase(req.file);
       }
 
-      const newUser = await register.create({
+      const newUser = {
         name,
         email,
         username,
@@ -226,9 +226,15 @@ Router.post(
         profilePicture: profilePictureUrl,
         role: role || "User", // Use provided role or default to "User"
         lastLoggingTime: getCurrentFormattedDateTime(),
-      });
+      };
 
-      newUser.save();
+      if (bio) {
+        newUser.bio = bio;
+      }
+
+      const createdUser = await register.create(newUser);
+
+      createdUser.save();
 
       res.status(201).json({
         Message: "User created successfully",
@@ -266,6 +272,7 @@ Router.get("/user/:userId", async (req, res) => {
       email: User.email,
       profilePicture: User.profilePicture,
       role: User.role,
+      bio: User.bio,
     });
   } catch (error) {
     console.error("Error fetching user:", error.message, error.stack);
