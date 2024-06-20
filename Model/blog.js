@@ -40,6 +40,7 @@ const blogSchema = new Schema({
   userId: { type: String, required: true},
   createdAt: { type: String, required: true },
   comments: { type: [commentSchema], default: [] }, // Embedding comments within blog
+  publish: { type: Boolean, default: false },
 });
 
 // Method to increment views

@@ -125,6 +125,32 @@ router.delete("/:blogId/comments/:commentId", async (req, res) => {
   }
 });
 
+// PUT route to update the publish status of a blog
+router.put("/:blogId/publish", async (req, res) => {
+  try {
+    const { blogId } = req.params;
+    const { publish } = req.body;
+
+    // Find the blog by its ID
+    const blog = await Blog.findOne({ blogId });
+
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Update the publish status
+    blog.publish = publish;
+
+    await blog.save();
+
+    res.json({ message: "Blog publish status updated successfully", blog });
+  } catch (error) {
+    console.error("Error updating blog publish status:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 // GET route to fetch blogs by subcategoryid
 router.get("/:subcategoryId", async (req, res) => {
   try {

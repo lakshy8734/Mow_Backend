@@ -467,4 +467,15 @@ Router.get("/", async (req, res) => {
   }
 });
 
+// GET route to fetch the total number of users with role "User"
+Router.get('/count/users', async (req, res) => {
+  try {
+    const userCount = await register.countDocuments({ role: 'User' });
+    res.json({ totalUsers: userCount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 module.exports = Router;
