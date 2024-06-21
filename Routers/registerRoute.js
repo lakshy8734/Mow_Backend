@@ -347,13 +347,23 @@ Router.post("/login/google", async (req, res) => {
   const { email, name, picture, role } = req.body;
 
   try {
+    // Log the incoming request body
+    console.log("Received Google login request:", { email, name, picture, role });
+
     // Check if the user exists by email
-    let User = await register.findOne({ email: email }); // Use register model
+    let User = await register.findOne({ email: email });
+
+    // Log the result of the user search
+    console.log("User found:", User);
+
     if (!User) {
       // If the user does not exist, create a new user
       const username = name; // Use the name as the username
       const password = generateRandomPassword(); // Generate a random strong password
       const hashpassword = await bcrypt.hash(password, 10);
+
+      // Log the new user details
+      console.log("Creating new user with:", { name, email, username, password: hashpassword });
 
       // Create a new user with the provided name, email, username, and hashed password
       User = await register.create({
@@ -371,12 +381,16 @@ Router.post("/login/google", async (req, res) => {
       User.lastLoggingTime = getLastLoggingTime();
       await User.save();
 
+      // Log the new user creation
+      console.log("New user created:", User);
+
       // Generate a token for the new user
       const token = jwt.sign({ id: User._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h", // expires in 24 hours
+        expiresIn: "1h", // expires in 1 hour
       });
 
-      console.log(User.userId);
+      // Log the generated token
+      console.log("Generated token for new user:", token);
 
       res.status(201).json({
         Message: "User created and logged in successfully",
@@ -404,12 +418,16 @@ Router.post("/login/google", async (req, res) => {
       User.lastLoggingTime = getLastLoggingTime();
       await User.save();
 
+      // Log the updated user details
+      console.log("Updated existing user:", User);
+
       // Generate a token for the existing user
       const token = jwt.sign({ id: User._id }, process.env.JWT_SECRET, {
-        expiresIn: "1h", // expires in 24 hours
+        expiresIn: "1h", // expires in 1 hour
       });
 
-      console.log(User.userId);
+      // Log the generated token
+      console.log("Generated token for existing user:", token);
 
       res.status(200).json({
         Message: "User logged in successfully",
@@ -427,10 +445,8 @@ Router.post("/login/google", async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ Message: "Internal Server Error at Google login side" });
+    console.error("Error during Google login:", error);
+    res.status(500).json({ Message: "Internal Server Error at Google login side" });
   }
 });
 
