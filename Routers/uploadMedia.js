@@ -61,7 +61,7 @@ router.post("/", upload.single("file"), async (req, res) => {
       .jpeg({ quality: 80 }) // Compress the image with 80% quality
       .toBuffer();
 
-    const storageRef = ref(storage, `Blogs/${currentFolderName}/${uniqueFilename}`);
+    const storageRef = ref(storage, `MOW/Blogs/${currentFolderName}/${uniqueFilename}`);
     await uploadBytes(storageRef, compressedImageBuffer);
 
     const downloadURL = await getDownloadURL(storageRef);

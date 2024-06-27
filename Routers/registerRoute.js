@@ -75,7 +75,7 @@ const uploadImageToFirebase = async (file) => {
 
   const storageRef = ref(
     storage,
-    `user/${currentFolderName}/${uniqueFilename}`
+    `MOW/User/${currentFolderName}/${uniqueFilename}`
   );
   await uploadBytes(storageRef, compressedImageBuffer);
   const downloadURL = await getDownloadURL(storageRef);
